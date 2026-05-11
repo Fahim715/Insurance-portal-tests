@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SafeGuard Insurance Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f6f9; color: #333; }
+    header { background: #1a3c6e; color: white; padding: 16px 32px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 22px; }
+    nav { background: #fff; border-bottom: 1px solid #ddd; padding: 0 32px; display: flex; gap: 0; }
+    nav a { display: block; padding: 14px 20px; text-decoration: none; color: #555; font-size: 14px; border-bottom: 3px solid transparent; }
+    nav a:hover, nav a.active { color: #1a3c6e; border-bottom-color: #1a3c6e; }
+    .container { max-width: 720px; margin: 40px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 8px; border: 1px solid #ddd; padding: 32px; margin-bottom: 24px; }
+    h2 { font-size: 20px; margin-bottom: 24px; color: #1a3c6e; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #1a3c6e; }
+    input.error, select.error { border-color: #e53935; }
+    .error-msg { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
+    .error-msg.visible { display: block; }
+    .btn { background: #1a3c6e; color: white; border: none; padding: 12px 28px; border-radius: 6px; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px; }
+    .btn:hover { background: #14305a; }
+    .btn-outline { background: white; color: #1a3c6e; border: 2px solid #1a3c6e; padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-right: 10px; }
+    .policy-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .policy-card.selected { border-color: #1a3c6e; background: #f0f4ff; }
+    .policy-name { font-weight: 700; font-size: 16px; }
+    .policy-price { font-size: 20px; font-weight: 700; color: #1a3c6e; }
+    .policy-features { font-size: 13px; color: #777; margin-top: 4px; }
+    .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
+    .alert { padding: 14px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; display: none; }
+    .alert.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display: block; }
+    .alert.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; display: block; }
+    #quoteResult { display: none; }
+    #policySection { display: none; }
+    #confirmSection { display: none; }
+    #successSection { display: none; }
+    .steps { display: flex; gap: 0; margin-bottom: 32px; }
+    .step { flex: 1; text-align: center; padding: 10px; font-size: 13px; color: #aaa; border-bottom: 3px solid #ddd; }
+    .step.active { color: #1a3c6e; border-bottom-color: #1a3c6e; font-weight: 600; }
+    .step.done { color: #2e7d32; border-bottom-color: #2e7d32; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛡 SafeGuard Insurance</h1>
+  </header>
+  <nav>
+    <a href="#" class="active" id="navQuote">Get a Quote</a>
+    <a href="#" id="navPolicies">My Policies</a>
+    <a href="#" id="navContact">Contact</a>
+  </nav>
+
+  <div class="container">
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step active" id="step1">1. Your Details</div>
+      <div class="step" id="step2">2. Choose Plan</div>
+      <div class="step" id="step3">3. Confirm</div>
+    </div>
+
+    <!-- STEP 1: Quote Form -->
+    <div class="card" id="quoteForm">
+      <h2>Get Your Insurance Quote</h2>
+      <div class="alert" id="formAlert"></div>
+      <div class="form-group">
+        <label for="fullName">Full Name *</label>
+        <input type="text" id="fullName" placeholder="e.g. John Smith" data-testid="input-name" />
+        <div class="error-msg" id="nameError">Full name is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" placeholder="e.g. john@email.com" data-testid="input-email" />
+        <div class="error-msg" id="emailError">Please enter a valid email.</div>
+      </div>
+      <div class="form-group">
+        <label for="age">Age *</label>
+        <input type="number" id="age" placeholder="18–99" min="18" max="99" data-testid="input-age" />
+        <div class="error-msg" id="ageError">Age must be between 18 and 99.</div>
+      </div>
+      <div class="form-group">
+        <label for="coverType">Coverage Type *</label>
+        <select id="coverType" data-testid="select-cover">
+          <option value="">-- Select coverage --</option>
+          <option value="health">Health Insurance</option>
+          <option value="life">Life Insurance</option>
+          <option value="auto">Auto Insurance</option>
+        </select>
+        <div class="error-msg" id="coverError">Please select a coverage type.</div>
+      </div>
+      <button class="btn" id="getQuoteBtn" data-testid="btn-get-quote">Get My Quote →</button>
+    </div>
+
+    <!-- STEP 2: Policy Selection -->
+    <div class="card" id="policySection">
+      <h2>Choose Your Plan</h2>
+      <p style="margin-bottom:20px; font-size:14px; color:#666;">Based on your details, here are your options:</p>
+
+      <div class="policy-card" id="planBasic" data-testid="plan-basic">
+        <div>
+          <div class="policy-name">Basic Plan</div>
+          <div class="policy-features">Essential coverage · $500 deductible</div>
+        </div>
+        <div style="text-align:right">
+          <div class="policy-price">$49<span style="font-size:13px;font-weight:400">/mo</span></div>
+          <button class="btn-outline" onclick="selectPlan('Basic', 49)" data-testid="btn-select-basic">Select</button>
+        </div>
+      </div>
+
+      <div class="policy-card" id="planStandard" data-testid="plan-standard">
+        <div>
+          <div class="policy-name">Standard Plan <span class="badge">Popular</span></div>
+          <div class="policy-features">Comprehensive coverage · $250 deductible</div>
+        </div>
+        <div style="text-align:right">
+          <div class="policy-price">$89<span style="font-size:13px;font-weight:400">/mo</span></div>
+          <button class="btn-outline" onclick="selectPlan('Standard', 89)" data-testid="btn-select-standard">Select</button>
+        </div>
+      </div>
+
+      <div class="policy-card" id="planPremium" data-testid="plan-premium">
+        <div>
+          <div class="policy-name">Premium Plan</div>
+          <div class="policy-features">Full coverage · $0 deductible</div>
+        </div>
+        <div style="text-align:right">
+          <div class="policy-price">$149<span style="font-size:13px;font-weight:400">/mo</span></div>
+          <button class="btn-outline" onclick="selectPlan('Premium', 149)" data-testid="btn-select-premium">Select</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Confirm -->
+    <div class="card" id="confirmSection">
+      <h2>Confirm Your Policy</h2>
+      <table style="width:100%; font-size:14px; border-collapse:collapse; margin-bottom:24px;">
+        <tr><td style="padding:8px 0; color:#777; width:40%">Name</td><td id="summaryName" style="font-weight:600"></td></tr>
+        <tr><td style="padding:8px 0; color:#777">Email</td><td id="summaryEmail" style="font-weight:600"></td></tr>
+        <tr><td style="padding:8px 0; color:#777">Coverage</td><td id="summaryCover" style="font-weight:600; text-transform:capitalize"></td></tr>
+        <tr><td style="padding:8px 0; color:#777">Plan</td><td id="summaryPlan" style="font-weight:600"></td></tr>
+        <tr><td style="padding:8px 0; color:#777">Monthly Cost</td><td id="summaryPrice" style="font-weight:700; color:#1a3c6e; font-size:16px"></td></tr>
+      </table>
+      <button class="btn" id="confirmBtn" data-testid="btn-confirm" onclick="confirmPolicy()">Confirm &amp; Purchase</button>
+    </div>
+
+    <!-- Success -->
+    <div class="card" id="successSection" data-testid="success-message">
+      <div style="text-align:center; padding: 20px 0;">
+        <div style="font-size:48px; margin-bottom:16px;">✅</div>
+        <h2 style="color:#2e7d32; margin-bottom:8px;">Policy Confirmed!</h2>
+        <p style="color:#555; margin-bottom:24px;">Your policy has been activated. A confirmation has been sent to your email.</p>
+        <button class="btn" style="width:auto; padding:10px 32px;" onclick="resetForm()" data-testid="btn-start-over">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedPlan = null;
+    let selectedPrice = null;
+
+    document.getElementById('getQuoteBtn').addEventListener('click', function () {
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const age = parseInt(document.getElementById('age').value);
+      const cover = document.getElementById('coverType').value;
+      let valid = true;
+
+      document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('visible'));
+      document.querySelectorAll('input, select').forEach(e => e.classList.remove('error'));
+
+      if (!name) { showErr('fullName', 'nameError'); valid = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('email', 'emailError'); valid = false; }
+      if (!age || age < 18 || age > 99) { showErr('age', 'ageError'); valid = false; }
+      if (!cover) { showErr('coverType', 'coverError'); valid = false; }
+
+      if (valid) {
+        document.getElementById('quoteForm').style.display = 'none';
+        document.getElementById('policySection').style.display = 'block';
+        document.getElementById('step1').className = 'step done';
+        document.getElementById('step2').className = 'step active';
+      }
+    });
+
+    function showErr(fieldId, errId) {
+      document.getElementById(fieldId).classList.add('error');
+      document.getElementById(errId).classList.add('visible');
+    }
+
+    function selectPlan(plan, price) {
+      selectedPlan = plan;
+      selectedPrice = price;
+      document.querySelectorAll('.policy-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('plan' + plan).classList.add('selected');
+      document.getElementById('policySection').style.display = 'none';
+      document.getElementById('confirmSection').style.display = 'block';
+      document.getElementById('summaryName').textContent = document.getElementById('fullName').value;
+      document.getElementById('summaryEmail').textContent = document.getElementById('email').value;
+      document.getElementById('summaryCover').textContent = document.getElementById('coverType').value;
+      document.getElementById('summaryPlan').textContent = plan + ' Plan';
+      document.getElementById('summaryPrice').textContent = '$' + price + '/month';
+      document.getElementById('step2').className = 'step done';
+      document.getElementById('step3').className = 'step active';
+    }
+
+    function confirmPolicy() {
+      document.getElementById('confirmSection').style.display = 'none';
+      document.getElementById('successSection').style.display = 'block';
+      document.getElementById('step3').className = 'step done';
+    }
+
+    function resetForm() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
