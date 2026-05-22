@@ -7,5 +7,5 @@
     "outDir": "./dist",
     "rootDir": "./"
   },
-  "include": ["pages/**/*", "tests/**/*", "fixtures/**/*"]
+  "include": ["pages/**/*", "tests/**/*", "fixtures/**/*", "utils/**/*"]
 }

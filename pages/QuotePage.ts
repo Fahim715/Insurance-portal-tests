@@ -30,6 +30,46 @@ export class QuotePage extends BasePage {
     await this.page.getByTestId('btn-get-quote').click();
   }
 
+  async clearAndFillName(name: string) {
+    await this.page.getByTestId('input-name').fill('');
+    await this.page.getByTestId('input-name').fill(name);
+  }
+
+  async clearAndFillEmail(email: string) {
+    await this.page.getByTestId('input-email').fill('');
+    await this.page.getByTestId('input-email').fill(email);
+  }
+
+  async clearAndFillAge(age: string) {
+    await this.page.getByTestId('input-age').fill('');
+    await this.page.getByTestId('input-age').fill(age);
+  }
+
+  async getFieldErrorText(field: 'name' | 'email' | 'age' | 'cover'): Promise<string> {
+    const errorSelectors: Record<'name' | 'email' | 'age' | 'cover', string> = {
+      name: '#nameError',
+      email: '#emailError',
+      age: '#ageError',
+      cover: '#coverError',
+    };
+
+    const text = await this.page.locator(errorSelectors[field]).textContent();
+    return text?.trim() ?? '';
+  }
+
+  async isGetQuoteButtonEnabled(): Promise<boolean> {
+    return this.page.getByTestId('btn-get-quote').isEnabled();
+  }
+
+  async getAllVisibleErrorMessages(): Promise<string[]> {
+    return this.getErrorMessages();
+  }
+
+  async getActivePlanStep(): Promise<string> {
+    const text = await this.page.locator('.step.active').first().textContent();
+    return text?.trim() ?? '';
+  }
+
   // Shortcut: fill the whole form and submit
   async submitQuoteForm(data: {
     name: string;

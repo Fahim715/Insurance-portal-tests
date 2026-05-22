@@ -6,6 +6,11 @@
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:headed": "playwright test --headed",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:mobile": "playwright test --project=\"Mobile Chrome\"",
+    "test:staging": "ENVIRONMENT=staging playwright test",
+    "test:ci": "CI=true playwright test",
     "report": "playwright show-report"
   },
   "devDependencies": {

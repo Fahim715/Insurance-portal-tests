@@ -1,19 +1,35 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
+import { buildFileUrl } from './utils/helpers';
 
-// Local file URL for the mock portal (no server needed)
-const portalUrl = `file://${path.resolve(__dirname, 'portal/index.html')}`;
+const environment = process.env.ENVIRONMENT ?? 'local';
+const isCI = !!process.env.CI;
+
+const baseUrls = {
+  local: buildFileUrl('portal/index.html'),
+  staging: 'https://staging.safeguard-insurance.example.com',
+};
+
+const baseURL = baseUrls[environment as keyof typeof baseUrls];
+if (!baseURL) {
+  throw new Error(`Unknown ENVIRONMENT: ${environment}`);
+}
 
 export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
-  retries: 1,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  retries: isCI ? 2 : 0,
+  reporter: isCI
+    ? [
+        ['html', { open: 'never' }],
+        ['junit', { outputFile: 'test-results/junit.xml' }],
+      ]
+    : [['list']],
 
   use: {
-    baseURL: portalUrl,
+    baseURL,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    trace: 'on-first-retry',
   },
 
   projects: [
@@ -24,6 +40,10 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
     },
   ],
 });
