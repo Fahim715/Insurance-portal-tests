@@ -8,6 +8,10 @@
 ![Node.js](https://img.shields.io/badge/Node.js_18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ---
 
+## Project Overview
+
+This project provides end-to-end Playwright tests for a mock insurance portal, covering quote entry, policy selection, and confirmation flows. It runs against the static UI in `portal/index.html` by default, with support for staging environments.
+
 ## Quick Start
 
 ```bash
