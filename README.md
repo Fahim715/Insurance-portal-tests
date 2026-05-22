@@ -1,113 +1,78 @@
-# SafeGuard Insurance Portal Test Automation
+# SafeGuard Insurance Portal — Test Automation
 
-Production-grade Playwright + TypeScript test suite for a mock insurance portal, built to showcase QA automation skills for fintech and insurtech products.
+> Production-grade end-to-end test suite for a mock insurance portal, built to showcase QA automation skills for fintech and insurtech products.
 
-## Tech Stack
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js_18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)
+---
 
-- Playwright
-- TypeScript
-- GitHub Actions
-
-## Prerequisites
-
-- Node.js 18+
-
-## Setup
+## Quick Start
 
 ```bash
 npm install
 npx playwright install
+npm test
 ```
+
+---
 
 ## Project Structure
 
 ```
 insurance-portal-tests/
-├── portal/
-│   └── index.html                  # Mock insurance portal UI (no server required)
-├── pages/
-│   ├── BasePage.ts                  # Shared page object helpers
-│   ├── NavigationPage.ts            # Page object for top navigation
-│   ├── QuotePage.ts                 # Quote form (step 1)
-│   └── PolicyPage.ts                # Plan selection and confirmation (steps 2-3)
-├── fixtures/
-│   ├── pageFixtures.ts              # Playwright test fixtures
-│   └── testData.ts                  # Centralized test data and constants
-├── utils/
-│   └── helpers.ts                   # URL builder and random data utilities
-├── tests/
-│   ├── navigation.spec.ts           # Navigation and header checks
-│   ├── quote.spec.ts                # Quote form validation and submission
-│   └── policy.spec.ts               # Plan selection, summary, and purchase flow
-├── .github/
-│   └── workflows/
-│       └── playwright.yml           # CI pipeline for Playwright tests
-├── playwright.config.ts             # Multi-environment Playwright configuration
-├── tsconfig.json                    # TypeScript settings
-└── package.json                     # Scripts and dev dependencies
+├── portal/             # Mock insurance portal UI (no server needed)
+├── pages/              # Page Object Models (Base, Navigation, Quote, Policy)
+├── fixtures/           # Playwright fixtures and centralized test data
+├── utils/              # URL builder and random data helpers
+├── tests/              # Test specs (navigation, quote, policy)
+├── .github/workflows/  # CI pipeline
+└── playwright.config.ts
 ```
+
+---
+
+## Test Coverage
+
+| Area | What's Tested |
+|---|---|
+| Page load | Title, navigation, initial state |
+| Field validation | Required fields, invalid email, boundary ages |
+| Submission flow | Step transitions, plan visibility |
+| Plan selection | Highlighting, pricing, confirm screen |
+| Confirmation summary | Name, email, coverage, plan, price |
+| Purchase flow | Success message and start-over reset |
+
+---
 
 ## Running Tests
 
 ```bash
-# Full test suite (all projects)
-npm test
-
-# Smoke tests only
-npm run test:smoke
-
-# Headed mode
-npm run test:headed
-
-# Chromium only
-npm run test:chrome
-
-# Firefox only
-npm run test:firefox
-
-# Mobile Chrome (Pixel 5)
-npm run test:mobile
-
-# Run against staging
-npm run test:staging
-
-# CI-style run (retries and reporters)
-npm run test:ci
-
-# Open Playwright HTML report
-npm run report
+npm test                  # Full suite
+npm run test:smoke        # Smoke tests only
+npm run test:headed       # Headed mode
+npm run test:chrome       # Chromium only
+npm run test:firefox      # Firefox only
+npm run test:mobile       # Mobile Chrome (Pixel 5)
+npm run test:staging      # Against staging env
+npm run test:ci           # CI-style (retries + reporters)
+npm run report            # Open HTML report
 ```
 
-## Environment Config
-
-The environment is selected using the `ENVIRONMENT` variable. Supported values:
-
-- `local` (default): runs against the local `portal/index.html` file
-- `staging`: runs against `https://staging.safeguard-insurance.example.com`
-
-Example:
+### Environments
 
 ```bash
 ENVIRONMENT=staging npx playwright test
 ```
 
-## Test Coverage
+Supported: `local` (default — uses `portal/index.html`) · `staging`
 
-| Area | Coverage |
-| --- | --- |
-| Page load | Title, navigation, and initial state checks |
-| Field validation | Required fields, invalid email, boundary ages, coverage required |
-| Submission flow | Step transitions and plan visibility |
-| Plan selection | Highlighting, pricing, and confirm screen transition |
-| Confirmation summary | Name, email, coverage, plan, and price validation |
-| Purchase flow | Confirm success message and start-over reset |
+---
 
 ## Design Patterns
 
-- Page Object Model (POM) keeps selectors and actions centralized
-- Fixtures provide clean, reusable test setup for each suite
-- `data-testid` attributes ensure resilient, UI-agnostic selectors
-
-## CI/CD
-
-GitHub Actions runs Playwright tests on every push to `main` and on pull requests. The workflow installs dependencies, installs Playwright browsers, executes tests with CI settings, and uploads Playwright artifacts on failure.
+- **Page Object Model** — selectors and actions stay centralized
+- **Fixtures** — clean, reusable test setup per suite
+- **`data-testid` selectors** — resilient, UI-agnostic
+- **CI/CD** — GitHub Actions runs on every push to `main` and on PRs
